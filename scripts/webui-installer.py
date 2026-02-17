@@ -78,14 +78,17 @@ async def get_extensions_list():
         print(f"Error fetching extensions list: {e}")
 
     # Add environment-specific extensions
-    if ENV_NAME == 'Kaggle' and UI != 'ComfyUI':
-        extensions.append('https://github.com/anxety-solo/sd-encrypt-image Encrypt-Image')
+    if ENV_NAME == 'Kaggle':
+        if UI != 'ComfyUI':
+            extensions.append('https://github.com/anxety-solo/sd-encrypt-image Encrypt-Image')
+        else:
+            extensions.append('https://github.com/anxety-solo/comfyui-encrypt-image')
 
     return extensions
 
 # ================= CONFIGURATION HANDLING =================
 
-PYTHON_VERSION = {'Neo': '3.13', 'Classic': '3.11'}.get(UI, '3.10')
+PYTHON_VERSION = {'ComfyUI': '3.13', 'Neo': '3.13', 'Classic': '3.11'}.get(UI, '3.10')
 
 CONFIG_MAP = {
     'A1111': [
