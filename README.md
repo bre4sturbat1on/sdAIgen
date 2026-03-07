@@ -24,17 +24,16 @@ English • [Русский](README-ru-RU.md)
   - *Widgets* for easy interaction.
   - Preset custom: *Settings* + *Styles* + [*UI Theme*](https://github.com/anxety-solo/anxety-theme)
   - Download previews for *models, LoRa and embedding* (CivitAi)
-  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *Classic/Neo (Forge)*, *ReForge*, *SD-UX.*
-  - _Exclusive to **Google Colab**_: Connection to GDrive.
+  - Choosing WebUI between *A1111, ComfyUI, Forge, Classic/Neo (Forge), ReForge, SD-UX.*
+  - _Exclusive to **Google Colab**_: Connection to GDrive: *Files, Outputs, UI Configs.*
 
 <details>
 <summary>📚 Installed Extensions</summary>
 
-| ✔️ — Installed | ❌ — Not Installed | 🔄 — Integrated Version | <sup>`†`</sup> — Only in *Kaggle* |
-|--------------- |------------------- |------------------------- |---------------------------------- |
+> ✔️ Installed · ❌ Not Installed · 🔄 Integrated · <sup>`†`</sup> — *Kaggle* only
 
 | Extension | A1111 | Forge | Classic | Neo | ReForge | SD-UX |
-|-----------|-------|-------|---------|-----|---------|-------|
+|-----------|:-----:|:-----:|:-------:|:---:|:-------:|:-----:|
 | [adetailer](https://github.com/Bing-su/adetailer) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [anxety-theme](https://github.com/anxety-solo/anxety-theme) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Aspect-Ratio-Plus](https://github.com/anxety-solo/sd-aspect-ratio-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
