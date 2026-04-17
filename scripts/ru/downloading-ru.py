@@ -121,7 +121,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         'localtunnel': "npm install -g localtunnel",
         'cloudflared': "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
         'zrok': "wget -qO zrok_1.1.10_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.1.10/zrok_1.1.10_linux_amd64.tar.gz; tar -xzf zrok_1.1.10_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.1.10_linux_amd64.tar.gz",
-        'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
+        'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.ngrok.com/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
     print('💿 Установка библиотек займет немного времени.')
@@ -136,10 +136,11 @@ latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 # Determine whether to reinstall venv
 venv_needs_reinstall = (
     not VENV.exists()  # venv is missing
-    # Check UIs change (Classic/Neo <-> other, ComfyUI <-> other)
+    # Check UIs change (ComfyUI <-> other, Classic/Neo <-> other, ReForge <-> other)
+    or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
     or (latest_ui == 'Neo') != (current_ui == 'Neo')
     or (latest_ui == 'Classic') != (current_ui == 'Classic')
-    or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
+    or (latest_ui == 'ReForge') != (current_ui == 'ReForge')
 )
 
 if not SKIP_INSTALL_VENV and venv_needs_reinstall:
@@ -149,12 +150,16 @@ if not SKIP_INSTALL_VENV and venv_needs_reinstall:
         clear_output()
 
     venv_config = {
-        'Neo':     (f"{HF_REPO_URL}/python31312-venv-torch2100-cu130-Neo.tar.lz4", 'Neo • 3.13.12'),
-        'Classic': (f"{HF_REPO_URL}/python31113-venv-torch280-cu126-Classic.tar.lz4", 'Classic • 3.11.13'),
-        'ComfyUI': (f"{HF_REPO_URL}/python31312-venv-torch2100-cu130-ComfyUI.tar.lz4", 'ComfyUI • 3.13.12'),
-        'default': (f"{HF_REPO_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", 'Default • 3.10.18')
+        'ComfyUI': f"{HF_REPO_URL}/python31312-venv-torch2100-cu130-ComfyUI.tar.lz4",
+        'Neo':     f"{HF_REPO_URL}/python31312-venv-torch2100-cu130-Neo.tar.lz4",
+        'ReForge': f"{HF_REPO_URL}/python31213-venv-torch2100-cu130-ReForge.tar.lz4",
+        'Classic': f"{HF_REPO_URL}/python31113-venv-torch280-cu126-Classic.tar.lz4",
+        'default': f"{HF_REPO_URL}/python31018-venv-torch260-cu124-fa.tar.lz4",
     }
-    venv_url, venv_version = venv_config.get(current_ui, venv_config['default'])
+    venv_url = venv_config.get(current_ui, venv_config['default'])
+    ui_name  = current_ui if current_ui in venv_config else 'Default'
+    _m = re.search(r'python(\d{1})(\d{2})(\d{2})', venv_url)
+    venv_version = f"{ui_name} • {int(_m[1])}.{int(_m[2])}.{int(_m[3])}" if _m else ui_name
 
     print(f"♻️ Установка VENV: {COL.B}{venv_version}{COL.X}, это может занять некоторое время...")
     setup_venv(venv_url)
@@ -581,7 +586,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False, sync_files=False, sync_outp
     # Mount logic
     if not drive_mounted:
         try:
-            print(f"\n{COL.Y}⏳ Подключение Google Drive...{COL.X}", end='')
+            print(f"{COL.Y}⏳ Подключение Google Drive...{COL.X}", end='')
             with capture.capture_output():
                 drive.mount('/content/drive')
             print(f"\r{COL.G}💿 Google Drive успешно подключён!{COL.X}")
@@ -589,7 +594,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False, sync_files=False, sync_outp
             print(f"\r{COL.R}❌ Mounting failed:{COL.X} {str(e)}")
             return
     else:
-        print(f"\n{COL.G}🎉 Google Drive подключён~{COL.X}")
+        print(f"{COL.G}🎉 Google Drive подключён~{COL.X}")
 
     active   = [n for f, n in [(sync_files, 'Файлы'), (sync_outputs, 'Генерации'), (sync_configs, 'Настройки UI')] if f]
     inactive = [n for f, n in [(sync_files, 'Файлы'), (sync_outputs, 'Генерации'), (sync_configs, 'Настройки UI')] if not f]
@@ -654,7 +659,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False, sync_files=False, sync_outp
                     log=log
                 )
 
-        print(f"{COL.G}✅ Синхронизация завершена!\n{COL.X}")
+        print(f"{COL.G}✅ Синхронизация завершена!{COL.X}")
     except Exception as e:
         print(f"{COL.R}❌ Setup error:{COL.X} {str(e)}")
 
